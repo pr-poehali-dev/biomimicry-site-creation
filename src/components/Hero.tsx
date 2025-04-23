@@ -7,7 +7,7 @@ const Hero = () => {
       <div 
         className="absolute inset-0 z-0 opacity-20" 
         style={{
-          backgroundImage: "url('https://source.unsplash.com/random/1920x1080/?nature,patterns')",
+          backgroundImage: "url('/biomimicry/hero-bg.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}

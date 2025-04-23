@@ -8,21 +8,21 @@ const categories = [
     id: 1,
     title: "Архитектура",
     description: "Здания и конструкции, вдохновленные природными формами и структурами.",
-    image: "https://source.unsplash.com/random/600x400/?architecture,nature",
+    image: "/biomimicry/architecture.jpg",
     link: "/examples?category=architecture"
   },
   {
     id: 2,
     title: "Транспорт",
     description: "Транспортные средства, аэродинамика которых основана на природных принципах.",
-    image: "https://source.unsplash.com/random/600x400/?biomimicry,transport",
+    image: "/biomimicry/transport.jpg",
     link: "/examples?category=transport"
   },
   {
     id: 3,
     title: "Материалы",
     description: "Новые материалы, имитирующие уникальные свойства природных материалов.",
-    image: "https://source.unsplash.com/random/600x400/?biomaterials",
+    image: "/biomimicry/materials.jpg",
     link: "/examples?category=materials"
   }
 ];

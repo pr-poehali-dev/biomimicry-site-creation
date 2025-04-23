@@ -12,10 +12,22 @@ const ImageWithLoader = ({ src, alt, className = "" }: ImageWithLoaderProps) => 
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    // Сбрасываем состояние при изменении src
+    setIsLoaded(false);
+    setError(false);
+    
     const img = new Image();
     img.src = src;
     img.onload = () => setIsLoaded(true);
-    img.onerror = () => setError(true);
+    img.onerror = () => {
+      console.error(`Ошибка загрузки изображения: ${src}`);
+      setError(true);
+    };
+
+    // Если изображение уже в кеше, сразу отметим его загруженным
+    if (img.complete) {
+      setIsLoaded(true);
+    }
 
     return () => {
       img.onload = null;
@@ -39,7 +51,7 @@ const ImageWithLoader = ({ src, alt, className = "" }: ImageWithLoaderProps) => 
       <img
         src={src}
         alt={alt}
-        className={`fade-in-image ${isLoaded ? 'loaded' : ''} ${className}`}
+        className={`transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'} ${className}`}
         loading="lazy"
       />
     </div>

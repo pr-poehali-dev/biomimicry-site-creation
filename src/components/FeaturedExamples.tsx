@@ -2,42 +2,55 @@ import Gallery from "./Gallery";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
+// Используем локальные изображения вместо unsplash
 const exampleImages = [
   {
     id: 1,
-    src: "https://source.unsplash.com/random/800x600/?biomimicry,velcro",
+    src: "/biomimicry/velcro.jpg",
     alt: "Застежка-липучка, вдохновленная репейником",
     description: "Застежка-липучка, созданная по образцу семян репейника"
   },
   {
     id: 2,
-    src: "https://source.unsplash.com/random/800x600/?lotus,water",
+    src: "/biomimicry/lotus.jpg",
     alt: "Эффект лотоса",
     description: "Самоочищающиеся поверхности, имитирующие листья лотоса"
   },
   {
     id: 3,
-    src: "https://source.unsplash.com/random/800x600/?shark,skin",
+    src: "/biomimicry/shark.jpg",
     alt: "Кожа акулы",
     description: "Материалы, вдохновленные кожей акулы для снижения сопротивления"
   },
   {
     id: 4,
-    src: "https://source.unsplash.com/random/800x600/?termite,mound",
+    src: "/biomimicry/termite.jpg",
     alt: "Термитник",
     description: "Вентиляционные системы зданий, вдохновленные термитниками"
   },
   {
     id: 5,
-    src: "https://source.unsplash.com/random/800x600/?kingfisher,bird",
+    src: "/biomimicry/kingfisher.jpg",
     alt: "Зимородок",
     description: "Дизайн скоростных поездов, вдохновленный клювом зимородка"
   },
   {
     id: 6,
-    src: "https://source.unsplash.com/random/800x600/?gecko,foot",
+    src: "/biomimicry/gecko.jpg",
     alt: "Лапки геккона",
     description: "Адгезивные материалы, вдохновленные лапками геккона"
+  },
+  {
+    id: 7,
+    src: "/biomimicry/butterfly.jpg",
+    alt: "Крыло бабочки",
+    description: "Фотонные кристаллы, вдохновленные крыльями бабочек"
+  },
+  {
+    id: 8,
+    src: "/biomimicry/spider.jpg",
+    alt: "Паутина",
+    description: "Сверхпрочные материалы, вдохновленные паутиной"
   }
 ];
 
@@ -52,7 +65,7 @@ const FeaturedExamples = () => {
         </p>
       </div>
       
-      <Gallery images={exampleImages} columns={3} />
+      <Gallery images={exampleImages} columns={4} />
       
       <div className="text-center pt-6">
         <Button 
