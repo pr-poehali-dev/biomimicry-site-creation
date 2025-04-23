@@ -3,12 +3,45 @@ import ImageWithLoader from "./ImageWithLoader";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
+// Локальная генерация заглушек для категорий
+const generateCategoryImage = (width: number, height: number, text: string) => {
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  
+  if (!ctx) return '/placeholder.svg';
+  
+  // Цвета для разных категорий
+  const colors = {
+    "Архитектура": '#9b87f5',
+    "Транспорт": '#7E69AB',
+    "Материалы": '#6E59A5'
+  };
+  
+  const bgColor = colors[text as keyof typeof colors] || '#D6BCFA';
+  
+  // Заполняем фон
+  ctx.fillStyle = bgColor;
+  ctx.fillRect(0, 0, width, height);
+  
+  // Добавляем текст
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 24px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, width / 2, height / 2);
+  
+  return canvas.toDataURL();
+};
+
 const categories = [
   {
     id: 1,
     title: "Архитектура",
     description: "Здания и конструкции, вдохновленные природными формами и структурами.",
     image: "/biomimicry/architecture.jpg",
+    localImage: generateCategoryImage(400, 200, "Архитектура"),
     link: "/examples?category=architecture"
   },
   {
@@ -16,6 +49,7 @@ const categories = [
     title: "Транспорт",
     description: "Транспортные средства, аэродинамика которых основана на природных принципах.",
     image: "/biomimicry/transport.jpg",
+    localImage: generateCategoryImage(400, 200, "Транспорт"),
     link: "/examples?category=transport"
   },
   {
@@ -23,6 +57,7 @@ const categories = [
     title: "Материалы",
     description: "Новые материалы, имитирующие уникальные свойства природных материалов.",
     image: "/biomimicry/materials.jpg",
+    localImage: generateCategoryImage(400, 200, "Материалы"),
     link: "/examples?category=materials"
   }
 ];
@@ -36,6 +71,7 @@ const BiomimicryCategories = () => {
             <ImageWithLoader
               src={category.image}
               alt={category.title}
+              fallbackSrc={category.localImage}
               className="w-full h-48 object-cover"
             />
           </CardHeader>

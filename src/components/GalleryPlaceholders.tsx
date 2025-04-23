@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-
-// Создаем плейсхолдеры для реальных изображений
-const createPlaceholder = (index: number) => ({
-  id: index,
-  src: `/placeholder.svg`,
-  alt: `Заглушка изображения ${index}`,
-  description: `Описание будет загружено позже`
-});
+import ImageWithLoader from "./ImageWithLoader";
 
 // Функция для генерации цветных плейсхолдеров
 const generateColoredPlaceholder = (width: number, height: number, text: string) => {
@@ -16,7 +9,7 @@ const generateColoredPlaceholder = (width: number, height: number, text: string)
   canvas.height = height;
   const ctx = canvas.getContext('2d');
   
-  if (!ctx) return '';
+  if (!ctx) return '/placeholder.svg';
   
   // Генерируем случайный цвет из палитры биомимикрии
   const colors = [
@@ -31,7 +24,7 @@ const generateColoredPlaceholder = (width: number, height: number, text: string)
   
   // Добавляем текст
   ctx.fillStyle = '#333';
-  ctx.font = '16px Arial';
+  ctx.font = 'bold 16px Arial';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(text, width / 2, height / 2);
@@ -42,19 +35,38 @@ const generateColoredPlaceholder = (width: number, height: number, text: string)
 interface GalleryPlaceholdersProps {
   count?: number;
   columns?: number;
+  useAsBackup?: boolean;
 }
 
-const GalleryPlaceholders = ({ count = 9, columns = 3 }: GalleryPlaceholdersProps) => {
-  const [placeholders, setPlaceholders] = useState<Array<{id: number, src: string, alt: string}>>([]);
+const GalleryPlaceholders = ({ count = 9, columns = 3, useAsBackup = false }: GalleryPlaceholdersProps) => {
+  const [placeholders, setPlaceholders] = useState<Array<{id: number, src: string, alt: string, description: string}>>([]);
   
   useEffect(() => {
     // Генерируем плейсхолдеры при монтировании компонента
+    const themes = [
+      "Архитектура", "Транспорт", "Материалы", "Медицина", 
+      "Робототехника", "Энергетика", "Умные материалы", "Аэродинамика", 
+      "Оптика", "Гидродинамика", "Адаптивные системы", "Экология"
+    ];
+    
+    const descriptions = [
+      "Вдохновлено природными структурами",
+      "Копирует принципы природных систем",
+      "Основано на механизмах природы",
+      "Адаптировано из природных организмов",
+      "Имитирует природные процессы",
+      "Реализует принципы живой природы"
+    ];
+    
     const newPlaceholders = Array.from({ length: count }, (_, i) => {
-      const dataUrl = generateColoredPlaceholder(400, 300, `Биомимикрия ${i+1}`);
+      const theme = themes[i % themes.length];
+      const description = descriptions[Math.floor(Math.random() * descriptions.length)];
+      const dataUrl = generateColoredPlaceholder(400, 300, `Биомимикрия: ${theme}`);
       return {
         id: i,
         src: dataUrl,
-        alt: `Биомимикрия ${i+1}`
+        alt: `Биомимикрия: ${theme}`,
+        description: `${theme}: ${description}`
       };
     });
     
@@ -68,19 +80,38 @@ const GalleryPlaceholders = ({ count = 9, columns = 3 }: GalleryPlaceholdersProp
     4: "grid-cols-1 md:grid-cols-2 lg:grid-cols-4",
   }[columns] || "grid-cols-1 md:grid-cols-2 lg:grid-cols-3";
 
+  if (useAsBackup) {
+    return (
+      <div className={`grid ${gridClass} gap-6`}>
+        {placeholders.map((item) => (
+          <div 
+            key={item.id}
+            className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow"
+          >
+            <img
+              src={item.src}
+              alt={item.alt}
+              className="w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+              <h3 className="text-white font-semibold text-lg">{item.alt}</h3>
+              <p className="text-white/90 text-sm">{item.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className={`grid ${gridClass} gap-6`}>
       {placeholders.map((placeholder) => (
         <div key={placeholder.id} className="rounded-lg overflow-hidden">
-          {placeholder.src ? (
-            <img 
-              src={placeholder.src} 
-              alt={placeholder.alt}
-              className="w-full aspect-video object-cover" 
-            />
-          ) : (
-            <Skeleton className="w-full aspect-video" />
-          )}
+          <img 
+            src={placeholder.src} 
+            alt={placeholder.alt}
+            className="w-full aspect-video object-cover" 
+          />
           <div className="p-4 bg-white">
             <Skeleton className="h-6 w-2/3 mb-2" />
             <Skeleton className="h-4 w-full mb-1" />

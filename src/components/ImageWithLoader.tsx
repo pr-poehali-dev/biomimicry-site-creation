@@ -5,27 +5,44 @@ interface ImageWithLoaderProps {
   src: string;
   alt: string;
   className?: string;
+  fallbackSrc?: string;
 }
 
-const ImageWithLoader = ({ src, alt, className = "" }: ImageWithLoaderProps) => {
+const ImageWithLoader = ({ 
+  src, 
+  alt, 
+  className = "", 
+  fallbackSrc = "/placeholder.svg" 
+}: ImageWithLoaderProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState(false);
+  const [imgSrc, setImgSrc] = useState(src);
 
   useEffect(() => {
     // Сбрасываем состояние при изменении src
     setIsLoaded(false);
     setError(false);
+    setImgSrc(src);
     
     const img = new Image();
     img.src = src;
     img.onload = () => setIsLoaded(true);
     img.onerror = () => {
       console.error(`Ошибка загрузки изображения: ${src}`);
+      setImgSrc(fallbackSrc);
       setError(true);
+      
+      // Попробуем загрузить запасное изображение
+      const fallbackImg = new Image();
+      fallbackImg.src = fallbackSrc;
+      fallbackImg.onload = () => setIsLoaded(true);
     };
 
     // Если изображение уже в кеше, сразу отметим его загруженным
-    if (img.complete) {
+    if (img.complete && !img.naturalWidth) {
+      setError(true);
+      setImgSrc(fallbackSrc);
+    } else if (img.complete) {
       setIsLoaded(true);
     }
 
@@ -33,15 +50,7 @@ const ImageWithLoader = ({ src, alt, className = "" }: ImageWithLoaderProps) => 
       img.onload = null;
       img.onerror = null;
     };
-  }, [src]);
-
-  if (error) {
-    return (
-      <div className={`bg-muted flex items-center justify-center ${className}`}>
-        <span className="text-muted-foreground">Изображение недоступно</span>
-      </div>
-    );
-  }
+  }, [src, fallbackSrc]);
 
   return (
     <div className="relative">
@@ -49,7 +58,7 @@ const ImageWithLoader = ({ src, alt, className = "" }: ImageWithLoaderProps) => 
         <Skeleton className={`${className} absolute inset-0`} />
       )}
       <img
-        src={src}
+        src={imgSrc}
         alt={alt}
         className={`transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'} ${className}`}
         loading="lazy"

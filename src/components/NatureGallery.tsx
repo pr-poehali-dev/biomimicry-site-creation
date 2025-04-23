@@ -1,65 +1,106 @@
+import { useEffect, useState } from "react";
 import ImageWithLoader from "./ImageWithLoader";
 import { Button } from "@/components/ui/button";
+import GalleryPlaceholders from "./GalleryPlaceholders";
 
-// Большая коллекция локальных изображений
-const natureImages = [
-  {
-    id: 1,
-    src: "/biomimicry/nature1.jpg",
-    alt: "Структура листа",
-    description: "Микроструктура листа показывает эффективное распределение питательных веществ"
-  },
-  {
-    id: 2,
-    src: "/biomimicry/nature2.jpg",
-    alt: "Кораллы",
-    description: "Кораллы вдохновляют разработку новых материалов для строительства"
-  },
-  {
-    id: 3,
-    src: "/biomimicry/nature3.jpg",
-    alt: "Паутина на рассвете",
-    description: "Паутина сочетает легкость и прочность"
-  },
-  {
-    id: 4,
-    src: "/biomimicry/nature4.jpg",
-    alt: "Морская ракушка",
-    description: "Форма ракушки оптимизирована для максимальной прочности"
-  },
-  {
-    id: 5,
-    src: "/biomimicry/nature5.jpg",
-    alt: "Соты",
-    description: "Пчелиные соты - пример эффективного использования материала"
-  },
-  {
-    id: 6,
-    src: "/biomimicry/nature6.jpg",
-    alt: "Перья птицы",
-    description: "Структура пера сочетает легкость и аэродинамичность"
-  },
-  {
-    id: 7,
-    src: "/biomimicry/nature7.jpg",
-    alt: "Змея",
-    description: "Кожа змеи вдохновляет создание материалов с минимальным трением"
-  },
-  {
-    id: 8,
-    src: "/biomimicry/nature8.jpg",
-    alt: "Грибы",
-    description: "Мицелий грибов вдохновляет создание новых биоразлагаемых материалов"
-  },
-  {
-    id: 9,
-    src: "/biomimicry/nature9.jpg",
-    alt: "Песчаные дюны",
-    description: "Естественные формы песчаных дюн вдохновляют архитекторов"
+// Функция для генерации изображений локально
+const generateNatureImage = (index: number, width: number, height: number) => {
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  
+  if (!ctx) return '/placeholder.svg';
+  
+  // Цвета для разных категорий
+  const colors = [
+    '#8B5CF6', '#D946EF', '#F97316', '#0EA5E9', 
+    '#10B981', '#F59E0B', '#6366F1', '#EC4899'
+  ];
+  
+  const bgColor = colors[index % colors.length];
+  
+  // Заполняем фон
+  ctx.fillStyle = bgColor;
+  ctx.fillRect(0, 0, width, height);
+  
+  // Рисуем круги для имитации природы
+  for (let i = 0; i < 10; i++) {
+    const x = Math.random() * width;
+    const y = Math.random() * height;
+    const radius = 10 + Math.random() * 40;
+    
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.3})`;
+    ctx.fill();
   }
+  
+  // Добавляем текст
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '18px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(`Природная структура ${index + 1}`, width / 2, height / 2);
+  
+  return canvas.toDataURL();
+};
+
+// Описания природных форм
+const natureDescriptions = [
+  "Микроструктура листа показывает эффективное распределение питательных веществ",
+  "Кораллы вдохновляют разработку новых материалов для строительства",
+  "Паутина сочетает легкость и прочность",
+  "Форма ракушки оптимизирована для максимальной прочности",
+  "Пчелиные соты - пример эффективного использования материала",
+  "Структура пера сочетает легкость и аэродинамичность",
+  "Кожа змеи вдохновляет создание материалов с минимальным трением",
+  "Мицелий грибов вдохновляет создание новых биоразлагаемых материалов",
+  "Естественные формы песчаных дюн вдохновляют архитекторов"
+];
+
+// Названия природных форм
+const natureNames = [
+  "Структура листа", "Кораллы", "Паутина на рассвете", 
+  "Морская ракушка", "Соты", "Перья птицы", 
+  "Змея", "Грибы", "Песчаные дюны"
 ];
 
 const NatureGallery = () => {
+  const [natureImages, setNatureImages] = useState<Array<{
+    id: number;
+    src: string;
+    localSrc: string;
+    alt: string;
+    description: string;
+  }>>([]);
+  
+  const [showMore, setShowMore] = useState(false);
+  const baseCount = 9;
+  const extraCount = 9;
+  
+  useEffect(() => {
+    // Генерируем изображения при монтировании компонента
+    const images = Array.from({ length: baseCount + extraCount }, (_, i) => {
+      const nameIndex = i % natureNames.length;
+      return {
+        id: i + 1,
+        src: `/biomimicry/nature${i + 1}.jpg`,
+        localSrc: generateNatureImage(i, 400, 400),
+        alt: i < natureNames.length ? natureNames[i] : `Природная форма ${i + 1}`,
+        description: i < natureDescriptions.length ? 
+          natureDescriptions[i] : 
+          `Эта природная структура демонстрирует уникальные свойства для биомимикрии`
+      };
+    });
+    
+    setNatureImages(images);
+  }, []);
+  
+  const displayedImages = showMore ? 
+    natureImages : 
+    natureImages.slice(0, baseCount);
+
   return (
     <div className="space-y-8">
       <div className="text-center">
@@ -71,7 +112,7 @@ const NatureGallery = () => {
       </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {natureImages.map((image) => (
+        {displayedImages.map((image) => (
           <div 
             key={image.id}
             className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow"
@@ -79,6 +120,7 @@ const NatureGallery = () => {
             <ImageWithLoader
               src={image.src}
               alt={image.alt}
+              fallbackSrc={image.localSrc}
               className="w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
@@ -93,8 +135,9 @@ const NatureGallery = () => {
         <Button 
           size="lg" 
           className="bg-biomimicry-primary hover:bg-biomimicry-secondary"
+          onClick={() => setShowMore(!showMore)}
         >
-          Загрузить еще
+          {showMore ? "Показать меньше" : "Загрузить еще"}
         </Button>
       </div>
     </div>
